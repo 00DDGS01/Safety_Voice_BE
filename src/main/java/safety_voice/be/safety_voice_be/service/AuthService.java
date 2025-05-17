@@ -37,5 +37,7 @@ public class AuthService {
                 .location(request.getLocation())
                 .passwordHash(encodedPassword)
                 .build();
+
+        userRepository.save(user);
     }
 }
