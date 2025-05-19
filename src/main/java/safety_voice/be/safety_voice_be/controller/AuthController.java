@@ -22,7 +22,7 @@ public class AuthController {
         authService.signup(request);
         return ResponseEntity
                 .ok()
-                .header("Content-Type", "application/json")
+                .header("Content-Type", "application/json; charset=UTF-8")
                 .body(Map.of("message", "회원가입이 완료되었습니다."));
     }
 }
