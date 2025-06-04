@@ -8,6 +8,8 @@ import safety_voice.be.safety_voice_be.domain.user.dto.LoginResponseDTO;
 import safety_voice.be.safety_voice_be.domain.user.dto.SignupRequestDTO;
 import safety_voice.be.safety_voice_be.domain.user.entity.User;
 import safety_voice.be.safety_voice_be.domain.user.repository.UserRepository;
+import safety_voice.be.safety_voice_be.global.exception.code.ErrorCode;
+import safety_voice.be.safety_voice_be.global.exception.response.CustomException;
 import safety_voice.be.safety_voice_be.global.util.JwtUtil;
 
 @Service
@@ -22,12 +24,12 @@ public class AuthService {
 
         // id 중복 검사
         if(userRepository.existsByLoginId(request.getLoginId())) {
-            throw new IllegalArgumentException("이미 존재하는 아이디입니다.");
+            throw new CustomException(ErrorCode.DUPLICATE_LOGIN_ID);
         }
 
         // 이메일 중복 검사
         if(userRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+            throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
         }
 
         // 비밀번호 암호화
@@ -47,14 +49,13 @@ public class AuthService {
 
     public LoginResponseDTO login(LoginRequestDTO requestDTO) {
         User user = userRepository.findByLoginId(requestDTO.getLoginId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디입니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.LOGIN_ID_NOT_FOUND));
 
         if(!passwordEncoder.matches(requestDTO.getPassword(), user.getPasswordHash())) {
-            throw new IllegalArgumentException("비밀번호가 올바르지 않습니다.");
+            throw new CustomException(ErrorCode.INVALID_PASSWORD);
         }
 
         String token = jwtUtil.generateToken(user.getLoginId());
-
         return new LoginResponseDTO(token, "로그인 성공");
     }
 
