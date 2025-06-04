@@ -2,11 +2,8 @@ package safety_voice.be.safety_voice_be.domain.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import safety_voice.be.safety_voice_be.global.base.BaseEntity;
 
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
@@ -35,4 +32,8 @@ public class User extends BaseEntity {
 
     @Column(length = 100)
     private String location;
+
+    public String gePasswordHash() {
+        return passwordHash;
+    }
 }

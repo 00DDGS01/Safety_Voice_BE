@@ -1,6 +1,8 @@
 package safety_voice.be.safety_voice_be.domain.user.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import safety_voice.be.safety_voice_be.domain.user.dto.LoginRequestDTO;
 import safety_voice.be.safety_voice_be.domain.user.dto.LoginResponseDTO;
@@ -32,5 +34,11 @@ public class AuthController {
         } catch (CustomException e) {
             return ApiResponse.error(e.getErrorCode());
         }
+    }
+
+    @GetMapping("/mypage")
+    @SecurityRequirement(name = "BearerAuth")
+    public ResponseEntity<String> mypage() {
+        return ResponseEntity.ok("JWT 인증된 사용자");
     }
 }

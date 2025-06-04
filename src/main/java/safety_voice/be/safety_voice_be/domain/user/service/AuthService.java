@@ -10,7 +10,7 @@ import safety_voice.be.safety_voice_be.domain.user.entity.User;
 import safety_voice.be.safety_voice_be.domain.user.repository.UserRepository;
 import safety_voice.be.safety_voice_be.global.exception.code.ErrorCode;
 import safety_voice.be.safety_voice_be.global.exception.response.CustomException;
-import safety_voice.be.safety_voice_be.global.util.JwtUtil;
+import safety_voice.be.safety_voice_be.global.Security.JwtUtil;
 
 @Service
 @RequiredArgsConstructor

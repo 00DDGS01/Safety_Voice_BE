@@ -1,19 +1,29 @@
-package safety_voice.be.safety_voice_be.global.util;
+package safety_voice.be.safety_voice_be.global.Security;
 
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
 @Component
 public class JwtUtil {
 
-    private final Key key = Keys.hmacShaKeyFor("safetyvoiceSuperSecretJwtKeyThatIsSecure123".getBytes());
-    private final long expirationMs = 1000 * 60 * 60 * 24; // 1일
+    private final Key key;
+    private final long expirationMs;
 
+    public JwtUtil(@Value("${jwt.secret}") String secret,
+                   @Value("${jwt.expiration:86400000}") long expirationMs) {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        this.expirationMs = expirationMs;
+    }
+
+    // 토큰 생성
     public String generateToken(String loginId) {
         return Jwts.builder()
                 .setSubject(loginId)
@@ -23,20 +33,25 @@ public class JwtUtil {
                 .compact();
     }
 
+    // 토큰에서 사용자 ID 추출
     public String getLoginIdFromToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
-                .parseClaimsJwt(token)
+                .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
     }
 
+    // 토큰 유효성 검사
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token);
             return true;
-        } catch (Exception e) {
+        } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
     }
