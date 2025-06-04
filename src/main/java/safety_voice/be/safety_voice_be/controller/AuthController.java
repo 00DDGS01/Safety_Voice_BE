@@ -27,6 +27,7 @@ public class AuthController {
                 .body(Map.of("message", "회원가입이 완료되었습니다."));
     }
 
+    @CrossOrigin(origins = "*")
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequestDTO request) {
         try {
