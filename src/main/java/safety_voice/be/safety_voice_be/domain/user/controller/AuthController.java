@@ -1,12 +1,12 @@
-package safety_voice.be.safety_voice_be.controller;
+package safety_voice.be.safety_voice_be.domain.user.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import safety_voice.be.safety_voice_be.domain.dto.LoginRequestDTO;
-import safety_voice.be.safety_voice_be.domain.dto.LoginResponseDTO;
-import safety_voice.be.safety_voice_be.domain.dto.SignupRequestDTO;
-import safety_voice.be.safety_voice_be.service.AuthService;
+import safety_voice.be.safety_voice_be.domain.user.dto.LoginRequestDTO;
+import safety_voice.be.safety_voice_be.domain.user.dto.LoginResponseDTO;
+import safety_voice.be.safety_voice_be.domain.user.dto.SignupRequestDTO;
+import safety_voice.be.safety_voice_be.domain.user.service.AuthService;
 
 import java.util.Map;
 

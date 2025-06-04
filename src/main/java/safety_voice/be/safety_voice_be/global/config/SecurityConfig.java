@@ -1,4 +1,4 @@
-package safety_voice.be.safety_voice_be.config;
+package safety_voice.be.safety_voice_be.global.config;
 
 import org.springframework.security.config.Customizer;
 import org.springframework.web.cors.CorsConfigurationSource;

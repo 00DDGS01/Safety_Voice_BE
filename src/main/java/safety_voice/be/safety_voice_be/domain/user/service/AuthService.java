@@ -1,14 +1,14 @@
-package safety_voice.be.safety_voice_be.service;
+package safety_voice.be.safety_voice_be.domain.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import safety_voice.be.safety_voice_be.domain.dto.LoginRequestDTO;
-import safety_voice.be.safety_voice_be.domain.dto.LoginResponseDTO;
-import safety_voice.be.safety_voice_be.domain.dto.SignupRequestDTO;
-import safety_voice.be.safety_voice_be.domain.entity.User;
-import safety_voice.be.safety_voice_be.repository.UserRepository;
-import safety_voice.be.safety_voice_be.util.JwtUtil;
+import safety_voice.be.safety_voice_be.domain.user.dto.LoginRequestDTO;
+import safety_voice.be.safety_voice_be.domain.user.dto.LoginResponseDTO;
+import safety_voice.be.safety_voice_be.domain.user.dto.SignupRequestDTO;
+import safety_voice.be.safety_voice_be.domain.user.entity.User;
+import safety_voice.be.safety_voice_be.domain.user.repository.UserRepository;
+import safety_voice.be.safety_voice_be.global.util.JwtUtil;
 
 @Service
 @RequiredArgsConstructor

@@ -1,7 +1,7 @@
-package safety_voice.be.safety_voice_be.repository;
+package safety_voice.be.safety_voice_be.domain.user.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import safety_voice.be.safety_voice_be.domain.entity.User;
+import safety_voice.be.safety_voice_be.domain.user.entity.User;
 
 import java.util.Optional;
 

@@ -1,4 +1,4 @@
-package safety_voice.be.safety_voice_be.util;
+package safety_voice.be.safety_voice_be.global.util;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
