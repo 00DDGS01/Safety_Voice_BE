@@ -26,9 +26,9 @@ public class SwaggerConfig {
                 )
 
                 // JWT 토큰 인증 방식
-                .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
+                .addSecurityItem(new SecurityRequirement().addList("BearerAuth"))
 
-                .components(new Components().addSecuritySchemes("bearerAuth",
+                .components(new Components().addSecuritySchemes("BearerAuth",
                         new SecurityScheme()
                                 .type(SecurityScheme.Type.HTTP) // HTTP 방식 인증
                                 .scheme("bearer")               // 'Bearer '인증 방식

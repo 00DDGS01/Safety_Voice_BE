@@ -2,7 +2,13 @@ package safety_voice.be.safety_voice_be.domain.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import safety_voice.be.safety_voice_be.domain.recordings.entity.RecordingFolder;
+import safety_voice.be.safety_voice_be.domain.safe_time.entity.SafeTime;
+import safety_voice.be.safety_voice_be.domain.safe_zone.entity.SafeZone;
 import safety_voice.be.safety_voice_be.global.base.BaseEntity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -16,7 +22,7 @@ public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;    // 자동 증가
+    private long id;
 
     @Column(name = "login_id", nullable = false, unique = true, length = 50)
     private String loginId;
@@ -32,6 +38,15 @@ public class User extends BaseEntity {
 
     @Column(length = 100)
     private String location;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SafeZone> safeZones;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SafeTime> safeTimes;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RecordingFolder> recordingFolders = new ArrayList<>();
 
     public String gePasswordHash() {
         return passwordHash;
