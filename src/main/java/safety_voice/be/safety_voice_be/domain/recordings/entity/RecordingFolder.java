@@ -24,6 +24,12 @@ public class RecordingFolder extends BaseEntity {
     @Column(name = "folder_name", nullable = false)
     private String folderName;
 
+    @Column(name = "color_tag")
+    private String colorTag;
+
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
