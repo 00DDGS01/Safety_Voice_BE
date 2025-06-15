@@ -7,6 +7,7 @@ import safety_voice.be.safety_voice_be.domain.user.entity.User;
 import safety_voice.be.safety_voice_be.global.base.BaseEntity;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -29,6 +30,17 @@ public class RecordingFolder extends BaseEntity {
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
+
+    // 최근 추가일
+    @Column(name = "last_addedd_date")
+    private Date lastAddeddDate;
+
+    // 총 용량
+    @Column(name = "total_size")
+    private Long totalSize;
+
+    @Column(name = "total_files")
+    private int totalFiles;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
