@@ -40,28 +40,6 @@ public class User extends BaseEntity {
     @Column(length = 100)
     private String location;
 
-    @Column(name = "trigger_word", length = 30)
-    private String triggerWord;
-
-    @Column(name = "trigger_repeat_count")
-    private Integer triggerRepeatCount;
-
-    // 시간 제한
-    @Column(name = "trigger_within_seconds")
-    private Integer triggerWithinSeconds;
-
-    @Column(name = "emergency_repeat_count")
-    private Integer emergencyRepeatCount;
-
-    @Column(name = "emergency_within_seconds")
-    private Integer emergencyWithinSeconds;
-
-    @Column(name = "voice_sample_url", length = 500)
-    private String voiceSampleUrl;
-
-    @Column(name = "is_voice_trained")
-    private Boolean isVoiceTrained;
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Recording> recordings = new ArrayList<>();
 
@@ -77,7 +55,11 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EmergencyContact> emergencyContacts = new ArrayList<>();
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private UserSetting userSettings;
+
     public String gePasswordHash() {
         return passwordHash;
     }
+
 }
