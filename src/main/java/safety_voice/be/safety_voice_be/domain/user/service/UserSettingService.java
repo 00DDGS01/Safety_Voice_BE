@@ -28,7 +28,7 @@ public class UserSettingService {
                 .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
 
         // 에러 코드 나중에 수정해야 함.
-        UserSetting setting = user.getUserSettings();
+        UserSetting setting = user.getUserSetting();
         if (setting == null) {
             throw new CustomException(UserErrorCode.SETTING_NOT_FOUND);
         }
@@ -56,12 +56,12 @@ public class UserSettingService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
 
-        UserSetting setting = user.getUserSettings();
+        UserSetting setting = user.getUserSetting();
         if (setting == null) {
             // 유저에 세팅이 없을 경우 새로 생성
             setting = new UserSetting();
             setting.setUser(user);
-            user.setUserSettings(setting);
+            user.setUserSetting(setting);
         }
 
         setting.setTriggerWord(dto.getTriggerWord());
@@ -74,11 +74,14 @@ public class UserSettingService {
 
         // 기존 연락처 초기화
         setting.getEmergencyContacts().clear();
+
+        final UserSetting finalsetting = setting;
+
         List<EmergencyContact> contacts = dto.getEmergencyContacts().stream()
                 .map(phone -> {
                     EmergencyContact contact = new EmergencyContact();
                     contact.setPhoneNumber(phone);
-                    contact.setUser(user); // 관계 주의
+                    contact.setUserSetting(finalsetting); // 관계 주의
                     return contact;
                 })
                 .toList();

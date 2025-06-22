@@ -14,7 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import safety_voice.be.safety_voice_be.global.Security.CustomUserDetails;
 import safety_voice.be.safety_voice_be.global.Security.CustomUserDetailsService;
 import safety_voice.be.safety_voice_be.global.Security.JwtAuthenticationFilter;
 import safety_voice.be.safety_voice_be.global.Security.JwtUtil;

@@ -24,4 +24,5 @@ public class UserSettingRequestDto {
     private Boolean isVoiceTrained;
 
     private List<String> emergencyContacts;
+
 }

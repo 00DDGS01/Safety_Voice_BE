@@ -18,6 +18,10 @@ public class CustomUserDetails implements UserDetails {
         this.user = user;
     }
 
+    public Long getUserId() {
+        return user.getId();
+    }
+
     // 권한 고정 : ROLE_USER
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -26,7 +30,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return user.gePasswordHash();
+        return user.getPasswordHash();
     }
 
     @Override

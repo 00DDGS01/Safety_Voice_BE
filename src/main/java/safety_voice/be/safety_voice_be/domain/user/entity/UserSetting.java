@@ -42,7 +42,7 @@ public class UserSetting {
     @Column(name = "is_voice_trained")
     private Boolean isVoiceTrained;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "userSetting", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EmergencyContact> emergencyContacts = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY)
