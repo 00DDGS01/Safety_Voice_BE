@@ -1,4 +1,4 @@
-package safety_voice.be.safety_voice_be.domain.dto;
+package safety_voice.be.safety_voice_be.domain.user.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
