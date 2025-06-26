@@ -47,4 +47,14 @@ public class UserSettingController {
         return ApiResponse.success("설정이 성공적으로 저장되었습니다.");
     }
 
+    @PatchMapping("/voice-trained")
+    @Operation(
+            summary = "음성 학습 완료 표시",
+            description = "FastAPI 서버에서 음성 학습이 완료되면 호출하여 사용자 설정의 isVoiceTrained 값을 true로 변경"
+    )
+    public ApiResponse<String> markVoiceAsTrained(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
+        userSettingService.markVoiceAsTrained(userId);
+        return ApiResponse.success("음성 학습이 완료되었습니다.");
+    }
 }

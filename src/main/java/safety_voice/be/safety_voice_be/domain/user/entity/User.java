@@ -18,7 +18,6 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class User extends BaseEntity {
 
     @Id
@@ -58,5 +57,18 @@ public class User extends BaseEntity {
     public String gePasswordHash() {
         return passwordHash;
     }
+
+    @Builder
+    public User(String loginId, String passwordHash, String email, String nickname, String location) {
+        this.loginId = loginId;
+        this.passwordHash = passwordHash;
+        this.email = email;
+        this.nickname = nickname;
+        this.location = location;
+
+        // 유저가 생성되면 유저세팅도 자동 생성
+        this.userSetting = new UserSetting(this);
+    }
+
 
 }

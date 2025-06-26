@@ -39,12 +39,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // 토큰 유효성 검사
             if (jwtUtil.validateToken(token)) {
                 // 토큰에서 사용자 정보 추출
-                String loginId = jwtUtil.getLoginIdFromToken(token);
-                log.info("Login ID from token: {}", loginId);
+                String userId = jwtUtil.getUserIdFromToken(token);
+                log.info("Login ID from token: {}", userId);
 
 
                 // UserDetails 조회
-                UserDetails userDetails = customUserDetailsService.loadUserByUsername(loginId);
+                UserDetails userDetails = customUserDetailsService.loadUserByUsername(userId);
                 log.info("UserDetails: {}", userDetails.getUsername());
 
 

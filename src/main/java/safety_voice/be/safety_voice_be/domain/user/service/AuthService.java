@@ -7,7 +7,9 @@ import safety_voice.be.safety_voice_be.domain.user.dto.LoginRequestDTO;
 import safety_voice.be.safety_voice_be.domain.user.dto.LoginResponseDTO;
 import safety_voice.be.safety_voice_be.domain.user.dto.SignupRequestDTO;
 import safety_voice.be.safety_voice_be.domain.user.entity.User;
+import safety_voice.be.safety_voice_be.domain.user.entity.UserSetting;
 import safety_voice.be.safety_voice_be.domain.user.repository.UserRepository;
+import safety_voice.be.safety_voice_be.domain.user.repository.UserSettingRepository;
 import safety_voice.be.safety_voice_be.global.exception.code.ErrorCode;
 import safety_voice.be.safety_voice_be.global.exception.response.CustomException;
 import safety_voice.be.safety_voice_be.global.Security.JwtUtil;
@@ -17,6 +19,7 @@ import safety_voice.be.safety_voice_be.global.Security.JwtUtil;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final UserSettingRepository userSettingRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
@@ -44,7 +47,12 @@ public class AuthService {
                 .passwordHash(encodedPassword)
                 .build();
 
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
+        if(!userSettingRepository.existsByUser(savedUser)) {
+            UserSetting setting = new UserSetting(savedUser);
+            userSettingRepository.save(setting);
+        }
     }
 
     public LoginResponseDTO login(LoginRequestDTO requestDTO) {

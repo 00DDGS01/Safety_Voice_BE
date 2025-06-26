@@ -20,7 +20,6 @@ public class UserSettingResponseDto {
     private Integer emergencyRepeatCount;
     private Integer emergencyRepeatWithinSeconds;
 
-    private String voiceSampleUrl;
     private Boolean isVoiceTrained;
 
     private List<String> emergencyContacts;

@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UserSettingService {
 
@@ -39,7 +40,6 @@ public class UserSettingService {
         dto.setTriggerWithinSeconds(setting.getTriggerWithinSeconds());
         dto.setEmergencyRepeatCount(setting.getEmergencyRepeatCount());
         dto.setEmergencyRepeatWithinSeconds(setting.getEmergencyWithinSeconds());
-        dto.setVoiceSampleUrl(setting.getVoiceSampleUrl());
         dto.setIsVoiceTrained(setting.getIsVoiceTrained());
 
         List<String> contactList = setting.getEmergencyContacts().stream()
@@ -57,19 +57,12 @@ public class UserSettingService {
                 .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
 
         UserSetting setting = user.getUserSetting();
-        if (setting == null) {
-            // 유저에 세팅이 없을 경우 새로 생성
-            setting = new UserSetting();
-            setting.setUser(user);
-            user.setUserSetting(setting);
-        }
 
         setting.setTriggerWord(dto.getTriggerWord());
         setting.setTriggerRepeatCount(dto.getTriggerRepeatCount());
         setting.setTriggerWithinSeconds(dto.getTriggerWithinSeconds());
         setting.setEmergencyRepeatCount(dto.getEmergencyRepeatCount());
         setting.setEmergencyWithinSeconds(dto.getEmergencyRepeatWithinSeconds());
-        setting.setVoiceSampleUrl(dto.getVoiceSampleUrl());
         setting.setIsVoiceTrained(dto.getIsVoiceTrained());
 
         // 기존 연락처 초기화
@@ -86,5 +79,16 @@ public class UserSettingService {
                 })
                 .toList();
         setting.getEmergencyContacts().addAll(contacts);
+    }
+
+    public void markVoiceAsTrained(Long userId) {
+        UserSetting setting = userSettingRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("User setting not found"));
+        setting.setIsVoiceTrained(true);
+
+        if(!Boolean.TRUE.equals(setting.getIsVoiceTrained())) {
+            setting.setIsVoiceTrained(true);
+            userSettingRepository.save(setting);
+        }
     }
 }

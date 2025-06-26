@@ -2,7 +2,6 @@ package safety_voice.be.safety_voice_be.domain.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import safety_voice.be.safety_voice_be.domain.recordings.entity.RecordingFolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +10,6 @@ import java.util.List;
 @Table(name = "user_setting")
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class UserSetting {
@@ -36,9 +34,6 @@ public class UserSetting {
     @Column(name = "emergency_within_seconds")
     private Integer emergencyWithinSeconds;
 
-    @Column(name = "voice_sample_url", length = 500)
-    private String voiceSampleUrl;
-
     @Column(name = "is_voice_trained")
     private Boolean isVoiceTrained;
 
@@ -49,4 +44,10 @@ public class UserSetting {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    protected UserSetting() {}
+
+    public UserSetting(User user) {
+        this.user = user;
+        this.isVoiceTrained = false;
+    }
 }
