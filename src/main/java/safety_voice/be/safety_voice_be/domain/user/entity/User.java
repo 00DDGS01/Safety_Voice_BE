@@ -2,10 +2,15 @@ package safety_voice.be.safety_voice_be.domain.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import safety_voice.be.safety_voice_be.domain.recordings.entity.Recording;
+import safety_voice.be.safety_voice_be.domain.recordings.entity.RecordingFolder;
+import safety_voice.be.safety_voice_be.domain.safe_time.entity.SafeTime;
+import safety_voice.be.safety_voice_be.domain.safe_zone.entity.SafeZone;
+import safety_voice.be.safety_voice_be.global.base.BaseEntity;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Entity
 @Table(name = "users")
@@ -13,12 +18,11 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class User {
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;    // 자동 증가
+    private long id;
 
     @Column(name = "login_id", nullable = false, unique = true, length = 50)
     private String loginId;
@@ -35,12 +39,36 @@ public class User {
     @Column(length = 100)
     private String location;
 
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Recording> recordings = new ArrayList<>();
 
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SafeZone> safeZones;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SafeTime> safeTimes;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RecordingFolder> recordingFolders = new ArrayList<>();
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private UserSetting userSetting;
+
+    public String gePasswordHash() {
+        return passwordHash;
+    }
+
+    @Builder
+    public User(String loginId, String passwordHash, String email, String nickname, String location) {
+        this.loginId = loginId;
+        this.passwordHash = passwordHash;
+        this.email = email;
+        this.nickname = nickname;
+        this.location = location;
+
+        // 유저가 생성되면 유저세팅도 자동 생성
+        this.userSetting = new UserSetting(this);
+    }
+
 
 }

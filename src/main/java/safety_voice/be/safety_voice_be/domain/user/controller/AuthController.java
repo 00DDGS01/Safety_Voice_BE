@@ -1,5 +1,6 @@
 package safety_voice.be.safety_voice_be.domain.user.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -7,8 +8,8 @@ import safety_voice.be.safety_voice_be.domain.user.dto.LoginRequestDTO;
 import safety_voice.be.safety_voice_be.domain.user.dto.LoginResponseDTO;
 import safety_voice.be.safety_voice_be.domain.user.dto.SignupRequestDTO;
 import safety_voice.be.safety_voice_be.domain.user.service.AuthService;
-
-import java.util.Map;
+import safety_voice.be.safety_voice_be.global.exception.response.ApiResponse;
+import safety_voice.be.safety_voice_be.global.exception.response.CustomException;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -19,31 +20,25 @@ public class AuthController {
 
     @CrossOrigin(origins = "*")
     @PostMapping("/signup")
-    public ResponseEntity<Map<String, String>> signup(@RequestBody SignupRequestDTO request) {
-        authService.signup(request);
-        return ResponseEntity
-                .ok()
-                .header("Content-Type", "application/json; charset=UTF-8")
-                .body(Map.of("message", "회원가입이 완료되었습니다."));
+    public ApiResponse<String> signup(@RequestBody SignupRequestDTO signupRequestDTO) {
+        authService.signup(signupRequestDTO);
+        return ApiResponse.success("회원가입이 완료되었습니다.");
     }
 
     @CrossOrigin(origins = "*")
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequestDTO request) {
+    public ApiResponse<LoginResponseDTO> login(@RequestBody LoginRequestDTO loginRequestDTO) {
         try {
-            // 로그인 성공 시 토큰 포함된 응답 받기
-            LoginResponseDTO loginResponse = authService.login(request);
-            return ResponseEntity
-                    .ok()
-                    .header("Content-Type", "application/json; charset=UTF-8")
-                    .body(Map.of(
-                            "message", "로그인 성공",
-                            "token", loginResponse.getToken()
-                    ));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity
-                    .status(401)
-                    .body(Map.of("message", e.getMessage()));
+            LoginResponseDTO loginResponseDTO = authService.login(loginRequestDTO);
+            return ApiResponse.success(loginResponseDTO);
+        } catch (CustomException e) {
+            return ApiResponse.error(e.getErrorCode());
         }
+    }
+
+    @GetMapping("/mypage")
+    @SecurityRequirement(name = "BearerAuth")
+    public ResponseEntity<String> mypage() {
+        return ResponseEntity.ok("JWT 인증된 사용자");
     }
 }
