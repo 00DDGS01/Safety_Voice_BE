@@ -43,10 +43,10 @@ public class User extends BaseEntity {
     private List<Recording> recordings = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SafeZone> safeZones;
+    private List<SafeZone> safeZones = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SafeTime> safeTimes;
+    private List<SafeTime> safeTimes = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RecordingFolder> recordingFolders = new ArrayList<>();
