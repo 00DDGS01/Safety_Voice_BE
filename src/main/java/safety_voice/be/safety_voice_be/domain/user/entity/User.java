@@ -2,6 +2,7 @@ package safety_voice.be.safety_voice_be.domain.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import safety_voice.be.safety_voice_be.domain.emergency_contact.entity.EmergencyContact;
 import safety_voice.be.safety_voice_be.domain.recordings.entity.Recording;
 import safety_voice.be.safety_voice_be.domain.recordings.entity.RecordingFolder;
 import safety_voice.be.safety_voice_be.domain.safe_time.entity.SafeTime;
@@ -53,6 +54,9 @@ public class User extends BaseEntity {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private UserSetting userSetting;
+
+    @OneToMany(mappedBy =  "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EmergencyContact> emergencyContacts = new ArrayList<>();
 
     public String gePasswordHash() {
         return passwordHash;

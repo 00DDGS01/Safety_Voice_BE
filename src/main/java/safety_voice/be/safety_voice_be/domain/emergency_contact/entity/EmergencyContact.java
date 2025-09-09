@@ -1,7 +1,9 @@
-package safety_voice.be.safety_voice_be.domain.user.entity;
+package safety_voice.be.safety_voice_be.domain.emergency_contact.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import safety_voice.be.safety_voice_be.domain.user.entity.User;
+import safety_voice.be.safety_voice_be.domain.user.entity.UserSetting;
 
 @Entity
 @Table(name = "emergency_contacts")
@@ -21,6 +23,10 @@ public class EmergencyContact {
 
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_setting_id", nullable = false)

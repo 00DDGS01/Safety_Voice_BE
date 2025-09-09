@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import safety_voice.be.safety_voice_be.domain.user.dto.UserSettingRequestDto;
-import safety_voice.be.safety_voice_be.domain.user.entity.EmergencyContact;
+import safety_voice.be.safety_voice_be.domain.emergency_contact.entity.EmergencyContact;
 import safety_voice.be.safety_voice_be.domain.user.entity.User;
 import safety_voice.be.safety_voice_be.domain.user.entity.UserSetting;
 import safety_voice.be.safety_voice_be.domain.user.exception.UserErrorCode;

@@ -2,6 +2,7 @@ package safety_voice.be.safety_voice_be.domain.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import safety_voice.be.safety_voice_be.domain.emergency_contact.entity.EmergencyContact;
 
 import java.util.ArrayList;
 import java.util.List;
