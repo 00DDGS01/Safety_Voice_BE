@@ -36,10 +36,7 @@ public class UserSettingService {
 
         UserSettingRequestDto dto = new UserSettingRequestDto();
         dto.setTriggerWord(setting.getTriggerWord());
-        dto.setTriggerRepeatCount(setting.getTriggerRepeatCount());
-        dto.setTriggerWithinSeconds(setting.getTriggerWithinSeconds());
-        dto.setEmergencyRepeatCount(setting.getEmergencyRepeatCount());
-        dto.setEmergencyRepeatWithinSeconds(setting.getEmergencyWithinSeconds());
+        dto.setEmergencyTriggerWord(setting.getEmergencyTriggerWord());
         dto.setIsVoiceTrained(setting.getIsVoiceTrained());
 
         List<String> contactList = setting.getEmergencyContacts().stream()
@@ -59,10 +56,7 @@ public class UserSettingService {
         UserSetting setting = user.getUserSetting();
 
         setting.setTriggerWord(dto.getTriggerWord());
-        setting.setTriggerRepeatCount(dto.getTriggerRepeatCount());
-        setting.setTriggerWithinSeconds(dto.getTriggerWithinSeconds());
-        setting.setEmergencyRepeatCount(dto.getEmergencyRepeatCount());
-        setting.setEmergencyWithinSeconds(dto.getEmergencyRepeatWithinSeconds());
+        setting.setEmergencyTriggerWord(dto.getEmergencyTriggerWord());
         setting.setIsVoiceTrained(dto.getIsVoiceTrained());
 
         // 기존 연락처 초기화

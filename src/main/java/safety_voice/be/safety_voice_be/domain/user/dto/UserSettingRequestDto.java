@@ -14,11 +14,7 @@ import java.util.List;
 public class UserSettingRequestDto {
 
     private String triggerWord;
-    private Integer triggerRepeatCount;
-    private Integer triggerWithinSeconds;
-
-    private Integer emergencyRepeatCount;
-    private Integer emergencyRepeatWithinSeconds;
+    private String emergencyTriggerWord;
 
     private Boolean isVoiceTrained;
 
