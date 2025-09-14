@@ -14,7 +14,7 @@ import safety_voice.be.safety_voice_be.global.exception.response.ApiResponse;
 @RestController
 @RequestMapping("/api/user/settings")
 @RequiredArgsConstructor
-@SecurityRequirement(name = "bearerAuth")
+@SecurityRequirement(name = "BearerAuth")
 @Tag(name = "User Settings", description = "사용자의 트리거 설정 API")
 public class UserSettingController {
 

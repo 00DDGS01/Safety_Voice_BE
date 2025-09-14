@@ -1,7 +1,9 @@
-package safety_voice.be.safety_voice_be.domain.user.entity;
+package safety_voice.be.safety_voice_be.domain.emergency_contact.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import safety_voice.be.safety_voice_be.domain.user.entity.User;
+import safety_voice.be.safety_voice_be.domain.user.entity.UserSetting;
 
 @Entity
 @Table(name = "emergency_contacts")
