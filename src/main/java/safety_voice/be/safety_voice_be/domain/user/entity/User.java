@@ -55,10 +55,6 @@ public class User extends BaseEntity {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private UserSetting userSetting;
 
-    public String gePasswordHash() {
-        return passwordHash;
-    }
-
     @Builder
     public User(String loginId, String passwordHash, String email, String nickname, String location) {
         this.loginId = loginId;

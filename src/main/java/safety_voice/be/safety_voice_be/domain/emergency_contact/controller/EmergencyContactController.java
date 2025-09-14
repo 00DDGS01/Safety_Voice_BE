@@ -17,13 +17,18 @@ public class EmergencyContactController {
     private final EmergencyContactService emergencyContactService;
 
     @PostMapping("/{userId}")
-    public ApiResponse<String> addContact(@PathVariable Long userId, @RequestBody EmergencyContactRequestDTO emergencyContactRequestDTO) {
-        emergencyContactService.addContact(userId, emergencyContactRequestDTO);
+    public ApiResponse<String> addContact(
+            @PathVariable("userId") Long userId,  // ← 이름 명시!
+            @RequestBody EmergencyContactRequestDTO dto
+    ) {
+        emergencyContactService.addContact(userId, dto);
         return ApiResponse.success("비상 연락처가 추가되었습니다.");
     }
 
     @GetMapping("/{userId}")
-    public ApiResponse<List<EmergencyContactResponseDTO>> getContacts(@PathVariable Long userId) {
+    public ApiResponse<List<EmergencyContactResponseDTO>> getContacts(
+            @PathVariable("userId") Long userId
+    ) {
         return ApiResponse.success(emergencyContactService.getContacts(userId));
     }
 }

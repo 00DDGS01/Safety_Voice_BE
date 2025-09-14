@@ -10,6 +10,9 @@ import safety_voice.be.safety_voice_be.domain.emergency_contact.entity.Emergency
 import safety_voice.be.safety_voice_be.domain.user.entity.UserSetting;
 import safety_voice.be.safety_voice_be.domain.user.repository.UserRepository;
 import safety_voice.be.safety_voice_be.domain.user.repository.UserSettingRepository;
+import safety_voice.be.safety_voice_be.global.exception.code.ErrorCode;
+import safety_voice.be.safety_voice_be.global.exception.response.BaseErrorCode;
+import safety_voice.be.safety_voice_be.global.exception.response.CustomException;
 
 import java.util.List;
 
@@ -24,16 +27,13 @@ public class EmergencyContactService {
     @Transactional
     public void addContact(Long userId, EmergencyContactRequestDTO dto) {
 
-        userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
         UserSetting userSetting = userSettingRepository.findByUserId(userId)
-                .orElseThrow(() -> new IllegalArgumentException("UserSetting not found"));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_SETTING_NOT_FOUND));
 
         boolean exists = emergencyContactRepository
                 .existsByUserSettingIdAndPhoneNumber(userSetting.getId(), dto.getPhoneNumber());
         if (exists) {
-            throw new IllegalArgumentException("이미 등록된 연락처입니다.");
+            throw new CustomException(ErrorCode.DUPLICATE_EMERGENCY_CONTACT);
         }
 
         EmergencyContact emergencyContact = EmergencyContact.builder()
@@ -49,7 +49,7 @@ public class EmergencyContactService {
     public List<EmergencyContactResponseDTO> getContacts(Long userId) {
 
         UserSetting userSetting = userSettingRepository.findByUserId(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User setting not found"));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_SETTING_NOT_FOUND));
 
 
         return emergencyContactRepository.findAllByUserSettingId(userSetting.getId())
