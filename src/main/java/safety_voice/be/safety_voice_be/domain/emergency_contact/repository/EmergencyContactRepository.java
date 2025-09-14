@@ -6,6 +6,7 @@ import safety_voice.be.safety_voice_be.domain.emergency_contact.entity.Emergency
 import java.util.List;
 
 public interface EmergencyContactRepository extends JpaRepository<EmergencyContact, Long> {
-    List<EmergencyContact> findByUserId(Long userId);
     List<EmergencyContact> findAllByUserSettingId(Long userSettingId);
+    List<EmergencyContact> findByUserSetting_User_Id(Long userId);
+    boolean existsByUserSettingIdAndPhoneNumber(Long userSettingId, String phoneNumber);
 }

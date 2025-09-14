@@ -55,9 +55,6 @@ public class User extends BaseEntity {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private UserSetting userSetting;
 
-    @OneToMany(mappedBy =  "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<EmergencyContact> emergencyContacts = new ArrayList<>();
-
     public String gePasswordHash() {
         return passwordHash;
     }

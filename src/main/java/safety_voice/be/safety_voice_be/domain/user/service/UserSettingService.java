@@ -3,6 +3,8 @@ package safety_voice.be.safety_voice_be.domain.user.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import safety_voice.be.safety_voice_be.domain.emergency_contact.dto.EmergencyContactRequestDTO;
+import safety_voice.be.safety_voice_be.domain.emergency_contact.dto.EmergencyContactResponseDTO;
 import safety_voice.be.safety_voice_be.domain.user.dto.UserSettingRequestDto;
 import safety_voice.be.safety_voice_be.domain.emergency_contact.entity.EmergencyContact;
 import safety_voice.be.safety_voice_be.domain.user.entity.User;
@@ -39,10 +41,19 @@ public class UserSettingService {
         dto.setEmergencyTriggerWord(setting.getEmergencyTriggerWord());
         dto.setIsVoiceTrained(setting.getIsVoiceTrained());
 
-        List<String> contactList = setting.getEmergencyContacts().stream()
-                .map(EmergencyContact::getPhoneNumber)
-                .collect(Collectors.toList());
-        dto.setEmergencyContacts(contactList);
+        List<EmergencyContactResponseDTO> contacts = setting.getEmergencyContacts().stream()
+                .map(emergencyContact -> EmergencyContactResponseDTO.builder()
+                        .name(emergencyContact.getName())
+                        .phoneNumber(emergencyContact.getPhoneNumber())
+                        .build()
+                )
+                .toList();
+
+        dto.setEmergencyContacts(
+                contacts.stream()
+                        .map(c -> new EmergencyContactRequestDTO(c.getName(), c.getPhoneNumber()))
+                        .toList()
+        );
 
         return dto;
     }
@@ -54,25 +65,38 @@ public class UserSettingService {
                 .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
 
         UserSetting setting = user.getUserSetting();
+        if (setting == null) {
+            setting = UserSetting.builder()
+                    .triggerWord(dto.getTriggerWord())
+                    .emergencyTriggerWord(dto.getEmergencyTriggerWord())
+                    .isVoiceTrained(Boolean.TRUE.equals(dto.getIsVoiceTrained()))
+                    .build();
 
-        setting.setTriggerWord(dto.getTriggerWord());
-        setting.setEmergencyTriggerWord(dto.getEmergencyTriggerWord());
-        setting.setIsVoiceTrained(dto.getIsVoiceTrained());
+            // 양방향 연관관계 세팅 (필요한 쪽 모두 연결)
+            setting.setUser(user);      // UserSetting → User
+            user.setUserSetting(setting); // User → UserSetting
+        } else {
+            // 기존 설정 업데이트
+            setting.setTriggerWord(dto.getTriggerWord());
+            setting.setEmergencyTriggerWord(dto.getEmergencyTriggerWord());
+            setting.setIsVoiceTrained(Boolean.TRUE.equals(dto.getIsVoiceTrained()));
+        }
 
         // 기존 연락처 초기화
         setting.getEmergencyContacts().clear();
 
-        final UserSetting finalsetting = setting;
+        if (dto.getEmergencyContacts() != null) {
+            final UserSetting finalSetting = setting;
+            List<EmergencyContact> contacts = dto.getEmergencyContacts().stream()
+                    .map(c -> EmergencyContact.builder()
+                            .name(c.getName())
+                            .phoneNumber(c.getPhoneNumber())
+                            .userSetting(finalSetting) // 역방향 세팅
+                            .build())
+                    .toList();
+            setting.getEmergencyContacts().addAll(contacts);
+        }
 
-        List<EmergencyContact> contacts = dto.getEmergencyContacts().stream()
-                .map(phone -> {
-                    EmergencyContact contact = new EmergencyContact();
-                    contact.setPhoneNumber(phone);
-                    contact.setUserSetting(finalsetting); // 관계 주의
-                    return contact;
-                })
-                .toList();
-        setting.getEmergencyContacts().addAll(contacts);
     }
 
     public void markVoiceAsTrained(Long userId) {
