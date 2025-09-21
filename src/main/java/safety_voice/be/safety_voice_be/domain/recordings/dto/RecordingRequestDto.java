@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 @Data
 public class RecordingRequestDto {
     private String recordingName;
-    private LocalDateTime startTime;
+    private LocalDateTime recordingStartTime;
     private Long recordingDuration;
     private Long fileSize;
     private String mimeType;

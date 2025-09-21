@@ -23,7 +23,7 @@ public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name = "login_id", nullable = false, unique = true, length = 50)
     private String loginId;
