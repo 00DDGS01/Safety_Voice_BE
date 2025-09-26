@@ -13,6 +13,8 @@ import safety_voice.be.safety_voice_be.domain.user.repository.UserRepository;
 import safety_voice.be.safety_voice_be.global.exception.code.ErrorCode;
 import safety_voice.be.safety_voice_be.global.exception.response.CustomException;
 
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -110,20 +112,28 @@ public class RecordingFolderService {
         recording.setFolder(targetFolder);
 
         if(oldFolder != null) {
+            oldFolder.getRecordings().remove(recording);
             updateFolderStats(oldFolder);
         }
 
+        targetFolder.getRecordings().remove(recording);
         updateFolderStats(targetFolder);
 
     }
 
-    private void updateFolderStats(RecordingFolder folder) {
+    @Transactional
+    public void updateFolderStats(RecordingFolder folder) {
         folder.setTotalFiles(folder.getRecordings().size());
         folder.setTotalSize(
                 folder.getRecordings().stream()
                         .mapToLong(Recording::getFileSize)
                         .sum()
         );
-        folder.setLastAddedDate(new Date());
+        folder.setLastAddedDate(
+                folder.getRecordings().stream()
+                        .map(Recording::getCreatedAt)
+                        .max(Comparator.naturalOrder())
+                        .orElse(LocalDateTime.now())
+        );
     }
 }

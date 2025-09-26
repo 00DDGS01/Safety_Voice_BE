@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import safety_voice.be.safety_voice_be.domain.recordings.entity.RecordingFolder;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -12,7 +13,7 @@ public class RecordingFolderResponseDto {
     Long id;
     private String folderName;
     private String description;
-    private Date lastAddedDate;
+    private LocalDateTime lastAddedDate;
     private Long totalSize;
     private int totalFiles;
 

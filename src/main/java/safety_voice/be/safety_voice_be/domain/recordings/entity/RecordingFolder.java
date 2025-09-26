@@ -6,6 +6,7 @@ import org.springframework.data.annotation.CreatedDate;
 import safety_voice.be.safety_voice_be.domain.user.entity.User;
 import safety_voice.be.safety_voice_be.global.base.BaseEntity;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,7 +31,7 @@ public class RecordingFolder extends BaseEntity {
 
     // 최근 추가일
     @Column(name = "last_added_date")
-    private Date lastAddedDate;
+    private LocalDateTime lastAddedDate;
 
     // 총 용량
     @Column(name = "total_size")
