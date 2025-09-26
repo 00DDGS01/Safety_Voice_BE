@@ -2,6 +2,7 @@ package safety_voice.be.safety_voice_be.domain.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import safety_voice.be.safety_voice_be.domain.emergency_contact.entity.EmergencyContact;
 import safety_voice.be.safety_voice_be.domain.recordings.entity.Recording;
 import safety_voice.be.safety_voice_be.domain.recordings.entity.RecordingFolder;
 import safety_voice.be.safety_voice_be.domain.safe_time.entity.SafeTime;
@@ -22,7 +23,7 @@ public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name = "login_id", nullable = false, unique = true, length = 50)
     private String loginId;
@@ -43,20 +44,16 @@ public class User extends BaseEntity {
     private List<Recording> recordings = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SafeZone> safeZones;
+    private List<SafeZone> safeZones = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SafeTime> safeTimes;
+    private List<SafeTime> safeTimes = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RecordingFolder> recordingFolders = new ArrayList<>();
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private UserSetting userSetting;
-
-    public String gePasswordHash() {
-        return passwordHash;
-    }
 
     @Builder
     public User(String loginId, String passwordHash, String email, String nickname, String location) {

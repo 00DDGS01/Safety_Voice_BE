@@ -1,16 +1,27 @@
 package safety_voice.be.safety_voice_be.domain.recordings.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import safety_voice.be.safety_voice_be.domain.recordings.entity.Recording;
 import safety_voice.be.safety_voice_be.domain.recordings.entity.RecordingFolder;
 import safety_voice.be.safety_voice_be.domain.user.entity.User;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface RecordingRepository extends JpaRepository<Recording, Long> {
 
-    // 사용자가 생성한 오늘 날짜로 시작하는 recordingName의 수를 세어 (n + 1)
-    int countByUserAndRecordingNameStartingWith(User user, String recordingName);
+    List<Recording> findByUserId(Long userId);
 
-    List<RecordingFolder> findAllByUser(User user);
+    Optional<Recording> findByIdAndUserId(Long recordingId, Long userId);
+
+    long countByFolderId(Long folderId);
+
+    @Query("select coalesce(sum(r.fileSize), 0) from Recording r where r.folder.id = :folderId")
+    long sumFileSizeByFolderId(@Param("folderId") Long folderId);
+
+    @Query("select max(r.createdAt) from Recording r where r.folder.id = :folderId")
+    Optional<LocalDateTime> findLastCreatedAtByFolderId(@Param("folderId") Long folderId);
 }

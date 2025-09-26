@@ -57,7 +57,7 @@ public class AuthService {
 
     public LoginResponseDTO login(LoginRequestDTO requestDTO) {
         User user = userRepository.findByLoginId(requestDTO.getLoginId())
-                .orElseThrow(() -> new CustomException(ErrorCode.LOGIN_ID_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         if(!passwordEncoder.matches(requestDTO.getPassword(), user.getPasswordHash())) {
             throw new CustomException(ErrorCode.INVALID_PASSWORD);

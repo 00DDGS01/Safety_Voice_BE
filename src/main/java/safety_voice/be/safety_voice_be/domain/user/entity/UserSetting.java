@@ -2,6 +2,7 @@ package safety_voice.be.safety_voice_be.domain.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import safety_voice.be.safety_voice_be.domain.emergency_contact.entity.EmergencyContact;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,18 +22,8 @@ public class UserSetting {
     @Column(name = "trigger_word", length = 30)
     private String triggerWord;
 
-    @Column(name = "trigger_repeat_count")
-    private Integer triggerRepeatCount;
-
-    // 시간 제한
-    @Column(name = "trigger_within_seconds")
-    private Integer triggerWithinSeconds;
-
-    @Column(name = "emergency_repeat_count")
-    private Integer emergencyRepeatCount;
-
-    @Column(name = "emergency_within_seconds")
-    private Integer emergencyWithinSeconds;
+    @Column(name = "emergency_trigger_word")
+    private String emergencyTriggerWord;
 
     @Column(name = "is_voice_trained")
     private Boolean isVoiceTrained;

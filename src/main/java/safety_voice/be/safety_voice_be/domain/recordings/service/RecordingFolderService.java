@@ -3,95 +3,129 @@ package safety_voice.be.safety_voice_be.domain.recordings.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import safety_voice.be.safety_voice_be.domain.recordings.dto.CreateFolderRequestDto;
-import safety_voice.be.safety_voice_be.domain.recordings.dto.FolderResponseDto;
+import safety_voice.be.safety_voice_be.domain.recordings.dto.RecordingFolderResponseDto;
+import safety_voice.be.safety_voice_be.domain.recordings.entity.Recording;
 import safety_voice.be.safety_voice_be.domain.recordings.entity.RecordingFolder;
 import safety_voice.be.safety_voice_be.domain.recordings.repository.RecordingFolderRepository;
+import safety_voice.be.safety_voice_be.domain.recordings.repository.RecordingRepository;
 import safety_voice.be.safety_voice_be.domain.user.entity.User;
-import safety_voice.be.safety_voice_be.domain.user.exception.UserErrorCode;
 import safety_voice.be.safety_voice_be.domain.user.repository.UserRepository;
+import safety_voice.be.safety_voice_be.global.exception.code.ErrorCode;
 import safety_voice.be.safety_voice_be.global.exception.response.CustomException;
 
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class RecordingFolderService {
 
     private final RecordingFolderRepository recordingFolderRepository;
+    private final RecordingRepository recordingRepository;
     private final UserRepository userRepository;
 
-    // 폴더 생성
-    @Transactional
-    public FolderResponseDto createFolder(CreateFolderRequestDto createFolderRequestDto, Long userId) {
+
+    // 자동 생성 이름용 카운터
+    private final AtomicInteger autoCounter = new AtomicInteger(1);
+
+    public RecordingFolderResponseDto createFolder(Long userId, String folderName, String description) {
         User user = userRepository.findById(userId)
-                .orElseThrow(()-> new CustomException(UserErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        // folderName 없으면 자동 생성
+        if (folderName == null || folderName.isBlank()) {
+            folderName = "사건 파일 " + autoCounter.getAndIncrement();
+        }
 
         RecordingFolder recordingFolder = RecordingFolder.builder()
-                .folderName(createFolderRequestDto.getFolderName())
-                .description(createFolderRequestDto.getDescription())
-                .colorTag(createFolderRequestDto.getColorTag())
+                .folderName(folderName)
+                .description(description)
+                .user(user)
                 .totalFiles(0)
                 .totalSize(0L)
-                .user(user)
-                .lastAddeddDate(new Date())
                 .build();
 
         recordingFolderRepository.save(recordingFolder);
 
-        return FolderResponseDto.builder()
-                .id(recordingFolder.getId())
-                .folderName(recordingFolder.getFolderName())
-                .description(recordingFolder.getDescription())
-                .colorTag(recordingFolder.getColorTag())
-                .totalFiles(recordingFolder.getTotalFiles())
-                .totalSize(recordingFolder.getTotalSize())
-                .build();
+        return RecordingFolderResponseDto.from(recordingFolder);
+
     }
 
-    // 전체 폴더 조회
-    public List<RecordingFolder> getFoldersByUserId(User user) {
-        return recordingFolderRepository.findAllByUser(user);
+    @Transactional(readOnly = true)
+    public List<RecordingFolderResponseDto> getUserFolders(Long userId) {
+        return recordingFolderRepository.findByUserId(userId).stream()
+                .map(RecordingFolderResponseDto::from)
+                .toList();
     }
 
-    // 폴더 하나 조회
-    public Optional<RecordingFolder> getFolderById(Long recordingFolderId) {
-        return recordingFolderRepository.findById(recordingFolderId);
+    public RecordingFolderResponseDto updateFolder(Long userId, Long folderId, String folderName, String description) {
+        RecordingFolder recordingFolder = recordingFolderRepository.findById(folderId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND));
+
+        if (!recordingFolder.getUser().getId().equals(userId)) {
+            throw new CustomException(ErrorCode.FORBIDDEN);
+        }
+
+        if (folderName != null && !folderName.isBlank()) {
+            recordingFolder.setFolderName(folderName);
+        }
+
+        if (description != null) {
+            recordingFolder.setDescription(description);
+        }
+
+        return RecordingFolderResponseDto.from(recordingFolder);
     }
 
-    // 폴더 생성
-    public RecordingFolder createFolder(String folderName, String colorTag, String description, User user) {
-        RecordingFolder folder = RecordingFolder.builder()
-                .folderName(folderName)
-                .colorTag(colorTag)
-                .description(description)
-                .user(user)
-                .lastAddeddDate(new Date())
-                .totalSize(0L)
-                .totalFiles(0)
-                .build();
+    public void deleteFolder(Long userId, Long folderId) {
+        RecordingFolder folder = recordingFolderRepository.findById(folderId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND));
 
-        return recordingFolderRepository.save(folder);
+        if (!folder.getUser().getId().equals(userId)) {
+            throw new CustomException(ErrorCode.FORBIDDEN);
+        }
+
+        recordingFolderRepository.delete(folder);
+    }
+
+    public void moveRecordingToFolder(Long userId, Long recordingId, Long targetFolderId) {
+        var recording = recordingRepository.findById(recordingId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND));
+
+        if (!recording.getUser().getId().equals(userId)) {
+            throw new CustomException(ErrorCode.FORBIDDEN);
+        }
+
+        RecordingFolder targetFolder = recordingFolderRepository.findById(targetFolderId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND));
+
+        if (!targetFolder.getUser().getId().equals(userId)) {
+            throw new CustomException(ErrorCode.FORBIDDEN);
+        }
+
+        RecordingFolder oldFolder = recording.getFolder();
+        recording.setFolder(targetFolder);
+
+        recordingRepository.flush();
+
+        if (oldFolder != null) updateFolderStats(oldFolder);
+        updateFolderStats(targetFolder);
+
     }
 
     @Transactional
-    public RecordingFolder updateFolder(Long folderId, String folderName, String colorTag, String description) {
-        RecordingFolder folder = recordingFolderRepository.findById(folderId)
-                .orElseThrow(() -> new IllegalArgumentException("폴더를 찾을 수 없습니다"));
+    public void updateFolderStats(RecordingFolder folder) {
+        long files = recordingRepository.countByFolderId(folder.getId());
+        long size = recordingRepository.sumFileSizeByFolderId(folder.getId());
+        LocalDateTime last = recordingRepository.findLastCreatedAtByFolderId(folder.getId())
+                .orElse(null);
 
-        folder.setFolderName(folderName);
-        folder.setColorTag(colorTag);
-        folder.setDescription(description);
-        return folder;
+        folder.setTotalFiles((int) files);
+        folder.setTotalSize(size);
+        folder.setLastAddedDate(last);
     }
-
-    // 폴더 삭제
-    public void deleteFolder(Long folderId) {
-        recordingFolderRepository.deleteById(folderId);
-    }
-
-
-
 }

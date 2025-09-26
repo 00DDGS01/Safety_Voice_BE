@@ -1,27 +1,23 @@
 package safety_voice.be.safety_voice_be.domain.user.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import safety_voice.be.safety_voice_be.domain.emergency_contact.dto.EmergencyContactRequestDTO;
 
 import java.util.List;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserSettingRequestDto {
 
     private String triggerWord;
-    private Integer triggerRepeatCount;
-    private Integer triggerWithinSeconds;
 
-    private Integer emergencyRepeatCount;
-    private Integer emergencyRepeatWithinSeconds;
+    private String emergencyTriggerWord;
 
     private Boolean isVoiceTrained;
 
-    private List<String> emergencyContacts;
+    private List<EmergencyContactRequestDTO> emergencyContacts;
 
 }

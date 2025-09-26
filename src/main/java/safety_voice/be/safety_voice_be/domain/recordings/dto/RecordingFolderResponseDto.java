@@ -1,20 +1,31 @@
 package safety_voice.be.safety_voice_be.domain.recordings.dto;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
+import safety_voice.be.safety_voice_be.domain.recordings.entity.RecordingFolder;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 @Builder
 public class RecordingFolderResponseDto {
-    private Long id;
+    Long id;
     private String folderName;
-    private String colorTag;
     private String description;
-    private Date lastAddeddDate;
+    private LocalDateTime lastAddedDate;
     private Long totalSize;
     private int totalFiles;
+
+    public static RecordingFolderResponseDto from(RecordingFolder recordingFolder) {
+        return RecordingFolderResponseDto.builder()
+                .id(recordingFolder.getId())
+                .folderName(recordingFolder.getFolderName())
+                .description(recordingFolder.getDescription())
+                .lastAddedDate(recordingFolder.getLastAddedDate())
+                .totalSize(recordingFolder.getTotalSize())
+                .totalFiles(recordingFolder.getTotalFiles())
+                .build();
+    }
+
 }
