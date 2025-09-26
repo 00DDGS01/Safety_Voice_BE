@@ -7,6 +7,7 @@ import safety_voice.be.safety_voice_be.domain.recordings.entity.Recording;
 import safety_voice.be.safety_voice_be.domain.recordings.entity.RecordingFolder;
 import safety_voice.be.safety_voice_be.domain.user.entity.User;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,9 +15,13 @@ public interface RecordingRepository extends JpaRepository<Recording, Long> {
 
     List<Recording> findByUserId(Long userId);
 
-
-    @Query("select r from Recording r where r.user.id = :userId")
-    List<Recording> findAllByUserId(@Param("userId") Long userId);
-
     Optional<Recording> findByIdAndUserId(Long recordingId, Long userId);
+
+    long countByFolderId(Long folderId);
+
+    @Query("select coalesce(sum(r.fileSize), 0) from Recording r where r.folder.id = :folderId")
+    long sumFileSizeByFolderId(@Param("folderId") Long folderId);
+
+    @Query("select max(r.createdAt) from Recording r where r.folder.id = :folderId")
+    Optional<LocalDateTime> findLastCreatedAtByFolderId(@Param("folderId") Long folderId);
 }

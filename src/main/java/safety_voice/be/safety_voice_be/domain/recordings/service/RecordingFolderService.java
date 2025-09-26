@@ -66,15 +66,15 @@ public class RecordingFolderService {
         RecordingFolder recordingFolder = recordingFolderRepository.findById(folderId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND));
 
-        if(!recordingFolder.getUser().getId().equals(userId)) {
+        if (!recordingFolder.getUser().getId().equals(userId)) {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }
 
-        if(folderName != null && !folderName.isBlank()) {
+        if (folderName != null && !folderName.isBlank()) {
             recordingFolder.setFolderName(folderName);
         }
 
-        if(description != null) {
+        if (description != null) {
             recordingFolder.setDescription(description);
         }
 
@@ -96,7 +96,7 @@ public class RecordingFolderService {
         var recording = recordingRepository.findById(recordingId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND));
 
-        if(!recording.getUser().getId().equals(userId)) {
+        if (!recording.getUser().getId().equals(userId)) {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }
 
@@ -108,32 +108,24 @@ public class RecordingFolderService {
         }
 
         RecordingFolder oldFolder = recording.getFolder();
-
         recording.setFolder(targetFolder);
 
-        if(oldFolder != null) {
-            oldFolder.getRecordings().remove(recording);
-            updateFolderStats(oldFolder);
-        }
+        recordingRepository.flush();
 
-        targetFolder.getRecordings().remove(recording);
+        if (oldFolder != null) updateFolderStats(oldFolder);
         updateFolderStats(targetFolder);
 
     }
 
     @Transactional
     public void updateFolderStats(RecordingFolder folder) {
-        folder.setTotalFiles(folder.getRecordings().size());
-        folder.setTotalSize(
-                folder.getRecordings().stream()
-                        .mapToLong(Recording::getFileSize)
-                        .sum()
-        );
-        folder.setLastAddedDate(
-                folder.getRecordings().stream()
-                        .map(Recording::getCreatedAt)
-                        .max(Comparator.naturalOrder())
-                        .orElse(LocalDateTime.now())
-        );
+        long files = recordingRepository.countByFolderId(folder.getId());
+        long size = recordingRepository.sumFileSizeByFolderId(folder.getId());
+        LocalDateTime last = recordingRepository.findLastCreatedAtByFolderId(folder.getId())
+                .orElse(null);
+
+        folder.setTotalFiles((int) files);
+        folder.setTotalSize(size);
+        folder.setLastAddedDate(last);
     }
 }
