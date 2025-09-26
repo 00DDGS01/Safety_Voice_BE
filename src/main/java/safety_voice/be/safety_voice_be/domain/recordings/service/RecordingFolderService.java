@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import safety_voice.be.safety_voice_be.domain.recordings.dto.RecordingFolderResponseDto;
-import safety_voice.be.safety_voice_be.domain.recordings.dto.RecordingResponseDto;
+import safety_voice.be.safety_voice_be.domain.recordings.entity.Recording;
 import safety_voice.be.safety_voice_be.domain.recordings.entity.RecordingFolder;
 import safety_voice.be.safety_voice_be.domain.recordings.repository.RecordingFolderRepository;
 import safety_voice.be.safety_voice_be.domain.recordings.repository.RecordingRepository;
@@ -13,6 +13,7 @@ import safety_voice.be.safety_voice_be.domain.user.repository.UserRepository;
 import safety_voice.be.safety_voice_be.global.exception.code.ErrorCode;
 import safety_voice.be.safety_voice_be.global.exception.response.CustomException;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -104,6 +105,25 @@ public class RecordingFolderService {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }
 
+        RecordingFolder oldFolder = recording.getFolder();
+
         recording.setFolder(targetFolder);
+
+        if(oldFolder != null) {
+            updateFolderStats(oldFolder);
+        }
+
+        updateFolderStats(targetFolder);
+
+    }
+
+    private void updateFolderStats(RecordingFolder folder) {
+        folder.setTotalFiles(folder.getRecordings().size());
+        folder.setTotalSize(
+                folder.getRecordings().stream()
+                        .mapToLong(Recording::getFileSize)
+                        .sum()
+        );
+        folder.setLastAddedDate(new Date());
     }
 }

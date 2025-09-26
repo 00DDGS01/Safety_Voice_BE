@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import safety_voice.be.safety_voice_be.domain.recordings.dto.RecordingRequestDto;
 import safety_voice.be.safety_voice_be.domain.recordings.dto.RecordingResponseDto;
 import safety_voice.be.safety_voice_be.domain.recordings.entity.Recording;
+import safety_voice.be.safety_voice_be.domain.recordings.entity.RecordingFolder;
 import safety_voice.be.safety_voice_be.domain.recordings.repository.RecordingRepository;
 import safety_voice.be.safety_voice_be.domain.user.entity.User;
 import safety_voice.be.safety_voice_be.domain.user.repository.UserRepository;
@@ -85,7 +86,22 @@ public class RecordingService {
 
         recordingRepository.save(recording);
 
+        if(recording.getFolder() != null) {
+            updateFolderStatus(recording.getFolder());
+        }
+
         return RecordingResponseDto.from(recording, presigned.url().toString());
+    }
+
+    // Folder 통계 관련 함수
+    private void updateFolderStatus(RecordingFolder folder) {
+        folder.setTotalFiles(folder.getRecordings().size());
+        folder.setTotalSize(
+                folder.getRecordings().stream()
+                        .mapToLong(Recording::getFileSize)
+                        .sum()
+        );
+        folder.setLastAddedDate(new Date());
     }
 
     @Transactional(readOnly = true)
