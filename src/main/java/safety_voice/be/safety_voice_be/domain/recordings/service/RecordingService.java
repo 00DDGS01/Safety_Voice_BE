@@ -7,8 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import safety_voice.be.safety_voice_be.domain.recordings.dto.RecordingRequestDto;
 import safety_voice.be.safety_voice_be.domain.recordings.dto.RecordingResponseDto;
 import safety_voice.be.safety_voice_be.domain.recordings.entity.Recording;
-import safety_voice.be.safety_voice_be.domain.recordings.entity.RecordingFolder;
-import safety_voice.be.safety_voice_be.domain.recordings.repository.RecordingFolderRepository;
 import safety_voice.be.safety_voice_be.domain.recordings.repository.RecordingRepository;
 import safety_voice.be.safety_voice_be.domain.user.entity.User;
 import safety_voice.be.safety_voice_be.domain.user.repository.UserRepository;
@@ -49,14 +47,24 @@ public class RecordingService {
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         String datePath = LocalDate.now().format(DTF);
+
+        // 1. MIME 타입에 따라 확장자 결정
+        String extension;
+        switch (recordingRequestDto.getMimeType()) {
+            case "audio/m4a" -> extension = "m4a";
+            case "audio/mp4" -> extension = "m4a";
+            case "audio/wav" -> extension = "wav";
+            default -> throw new CustomException(ErrorCode.UNSUPPORTED_MEDIA_TYPE);
+        }
         // S3 Key 네이밍 (userId/년월/uuid.wav)
         String s3Key = String.format("%d/%s/%s.wav",
-                userId, datePath, UUID.randomUUID());
+                userId, datePath, UUID.randomUUID(), extension);
 
         // PUT용 Presigened URL 생성 (Content-Type만 지정)
         PutObjectRequest putRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(s3Key)
+                .contentType(recordingRequestDto.getMimeType())
                 .build();
 
         PresignedPutObjectRequest presigned = s3Presigner.presignPutObject(

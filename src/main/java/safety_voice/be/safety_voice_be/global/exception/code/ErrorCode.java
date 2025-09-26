@@ -35,6 +35,9 @@ public enum ErrorCode implements BaseErrorCode {
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "409_003", "이미 존재하는 이메일입니다."),
     DUPLICATE_EMERGENCY_CONTACT(HttpStatus.CONFLICT, "409_004", "이미 등록된 긴급 연락처입니다."),
 
+    // 415 지원되지 않는 포맷
+    UNSUPPORTED_MEDIA_TYPE(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "415_001", "지원되지 않는 확장자입니다."),
+
 
     // 500 INTERNAL SERVER ERROR
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "500_001", "서버 내부 오류가 발생했습니다."),
