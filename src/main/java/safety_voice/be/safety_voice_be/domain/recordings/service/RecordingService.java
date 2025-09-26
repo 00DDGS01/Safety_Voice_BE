@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import safety_voice.be.safety_voice_be.domain.recordings.dto.RecordingRequestDto;
 import safety_voice.be.safety_voice_be.domain.recordings.dto.RecordingResponseDto;
 import safety_voice.be.safety_voice_be.domain.recordings.entity.Recording;
+import safety_voice.be.safety_voice_be.domain.recordings.entity.RecordingFolder;
 import safety_voice.be.safety_voice_be.domain.recordings.repository.RecordingRepository;
 import safety_voice.be.safety_voice_be.domain.user.entity.User;
 import safety_voice.be.safety_voice_be.domain.user.repository.UserRepository;
@@ -22,6 +23,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -57,7 +59,7 @@ public class RecordingService {
             default -> throw new CustomException(ErrorCode.UNSUPPORTED_MEDIA_TYPE);
         }
         // S3 Key 네이밍 (userId/년월/uuid.wav)
-        String s3Key = String.format("%d/%s/%s.wav",
+        String s3Key = String.format("%d/%s/%s.%s",
                 userId, datePath, UUID.randomUUID(), extension);
 
         // PUT용 Presigened URL 생성 (Content-Type만 지정)
@@ -85,7 +87,28 @@ public class RecordingService {
 
         recordingRepository.save(recording);
 
+        if(recording.getFolder() != null) {
+            updateFolderStatus(recording.getFolder());
+        }
+
         return RecordingResponseDto.from(recording, presigned.url().toString());
+    }
+
+    // Folder 통계 관련 함수
+    @Transactional
+    public void updateFolderStatus(RecordingFolder folder) {
+        folder.setTotalFiles(folder.getRecordings().size());
+        folder.setTotalSize(
+                folder.getRecordings().stream()
+                        .mapToLong(Recording::getFileSize)
+                        .sum()
+        );
+        folder.setLastAddedDate(
+                folder.getRecordings().stream()
+                        .map(Recording::getCreatedAt)
+                        .max(Comparator.naturalOrder())
+                        .orElse(LocalDateTime.now())
+        );
     }
 
     @Transactional(readOnly = true)

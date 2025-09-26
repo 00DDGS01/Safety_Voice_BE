@@ -10,5 +10,6 @@ import java.util.List;
 
 @Repository
 public interface RecordingFolderRepository extends JpaRepository<RecordingFolder, Long> {
-    List<RecordingFolder> findAllByUser(User user);
+    List<RecordingFolder> findAllByUserId(Long userId);
+    List<RecordingFolder> findByUserId(Long userId);
 }
