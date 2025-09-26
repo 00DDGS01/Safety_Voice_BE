@@ -25,15 +25,12 @@ public class RecordingFolder extends BaseEntity {
     @Column(name = "folder_name", nullable = false)
     private String folderName;
 
-    @Column(name = "color_tag")
-    private String colorTag;
-
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     // 최근 추가일
-    @Column(name = "last_addedd_date")
-    private Date lastAddeddDate;
+    @Column(name = "last_added_date")
+    private Date lastAddedDate;
 
     // 총 용량
     @Column(name = "total_size")
