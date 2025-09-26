@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import safety_voice.be.safety_voice_be.domain.recordings.dto.RecordingFolderResponseDto;
+import safety_voice.be.safety_voice_be.domain.recordings.dto.RecordingResponseDto;
 import safety_voice.be.safety_voice_be.domain.recordings.entity.RecordingFolder;
 import safety_voice.be.safety_voice_be.domain.recordings.repository.RecordingFolderRepository;
+import safety_voice.be.safety_voice_be.domain.recordings.repository.RecordingRepository;
 import safety_voice.be.safety_voice_be.domain.user.entity.User;
 import safety_voice.be.safety_voice_be.domain.user.repository.UserRepository;
 import safety_voice.be.safety_voice_be.global.exception.code.ErrorCode;
@@ -20,7 +22,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class RecordingFolderService {
 
     private final RecordingFolderRepository recordingFolderRepository;
+    private final RecordingRepository recordingRepository;
     private final UserRepository userRepository;
+
 
     // 자동 생성 이름용 카운터
     private final AtomicInteger autoCounter = new AtomicInteger(1);
@@ -55,6 +59,25 @@ public class RecordingFolderService {
                 .toList();
     }
 
+    public RecordingFolderResponseDto updateFolder(Long userId, Long folderId, String folderName, String description) {
+        RecordingFolder recordingFolder = recordingFolderRepository.findById(folderId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND));
+
+        if(!recordingFolder.getUser().getId().equals(userId)) {
+            throw new CustomException(ErrorCode.FORBIDDEN);
+        }
+
+        if(folderName != null && !folderName.isBlank()) {
+            recordingFolder.setFolderName(folderName);
+        }
+
+        if(description != null) {
+            recordingFolder.setDescription(description);
+        }
+
+        return RecordingFolderResponseDto.from(recordingFolder);
+    }
+
     public void deleteFolder(Long userId, Long folderId) {
         RecordingFolder folder = recordingFolderRepository.findById(folderId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND));
@@ -66,5 +89,21 @@ public class RecordingFolderService {
         recordingFolderRepository.delete(folder);
     }
 
+    public void moveRecordingToFolder(Long userId, Long recordingId, Long targetFolderId) {
+        var recording = recordingRepository.findById(recordingId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND));
 
+        if(!recording.getUser().getId().equals(userId)) {
+            throw new CustomException(ErrorCode.FORBIDDEN);
+        }
+
+        RecordingFolder targetFolder = recordingFolderRepository.findById(targetFolderId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESOURCE_NOT_FOUND));
+
+        if (!targetFolder.getUser().getId().equals(userId)) {
+            throw new CustomException(ErrorCode.FORBIDDEN);
+        }
+
+        recording.setFolder(targetFolder);
+    }
 }
