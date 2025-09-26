@@ -38,7 +38,7 @@ public class RecordingFolderController {
     @Operation(summary = "폴더 수정", description = "폴더 이름과 설명을 수정합니다.")
     public ApiResponse<RecordingFolderResponseDto> updateFolder(
             @RequestParam("userId") Long userId,
-            @PathVariable Long folderId,
+            @PathVariable("folderId") Long folderId,
             @RequestBody RecordingFolderRequestDto recordingFolderRequestDto
     ) {
         return ApiResponse.success(recordingFolderService.updateFolder(userId, folderId, recordingFolderRequestDto.getFolderName(), recordingFolderRequestDto.getDescription()));
