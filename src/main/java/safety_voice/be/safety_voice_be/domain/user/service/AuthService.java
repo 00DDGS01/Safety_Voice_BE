@@ -44,6 +44,7 @@ public class AuthService {
                 .email(request.getEmail())
                 .nickname(request.getNickname())
                 .location(request.getLocation())
+                .phoneNumber(request.getPhoneNumber())
                 .passwordHash(encodedPassword)
                 .build();
 
