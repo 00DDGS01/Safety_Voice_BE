@@ -51,6 +51,9 @@ dependencies {
     implementation 'software.amazon.awssdk:auth'
     implementation 'software.amazon.awssdk:regions'
 
+    // AWS SDK
+    implementation 'software.amazon.awssdk:sns:2.20.160'
+
 
 }
 
