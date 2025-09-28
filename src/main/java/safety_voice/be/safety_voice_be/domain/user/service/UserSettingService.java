@@ -30,7 +30,6 @@ public class UserSettingService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
 
-        // 에러 코드 나중에 수정해야 함.
         UserSetting setting = user.getUserSetting();
         if (setting == null) {
             throw new CustomException(UserErrorCode.SETTING_NOT_FOUND);

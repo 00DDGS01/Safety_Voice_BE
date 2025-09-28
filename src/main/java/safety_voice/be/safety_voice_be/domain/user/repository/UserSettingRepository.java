@@ -8,7 +8,6 @@ import java.util.Optional;
 
 public interface UserSettingRepository extends JpaRepository<UserSetting, Long> {
     Optional<UserSetting> findByUserId(Long user_id);
-    UserSetting findById(long id);
 
     boolean existsByUser(User savedUser);
 }
