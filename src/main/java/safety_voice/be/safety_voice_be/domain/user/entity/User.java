@@ -41,9 +41,6 @@ public class User extends BaseEntity {
     @Column(name = "location", length = 100)
     private String location;
 
-    @Column(name = "phone_number", nullable = false, length = 50, unique = true)
-    private String phoneNumber;
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Recording> recordings = new ArrayList<>();
 

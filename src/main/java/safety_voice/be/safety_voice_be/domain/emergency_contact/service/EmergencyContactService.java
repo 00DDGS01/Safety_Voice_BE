@@ -38,7 +38,7 @@ public class EmergencyContactService {
 
         EmergencyContact emergencyContact = EmergencyContact.builder()
                 .name(dto.getName())
-                .phoneNumber(dto.getPhoneNumber())
+                .phoneNumber(normalizePhoneNumber(dto.getPhoneNumber()))
                 .userSetting(userSetting)
                 .build();
 
@@ -56,5 +56,13 @@ public class EmergencyContactService {
                 .stream()
                 .map(EmergencyContactResponseDTO::from)
                 .toList();
+    }
+
+    private String normalizePhoneNumber(String rawPhoneNumber) {
+        String cleaned = rawPhoneNumber.replaceAll("[^0-9]", "");
+        if (cleaned.startsWith("0")) {
+            return "+82" + cleaned.substring(1);
+        }
+        return "+" + cleaned;
     }
 }

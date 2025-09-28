@@ -23,9 +23,5 @@ public class SignupRequestDTO {
     @Email(message = "올바른 이메일 형식이어야 합니다.") // 올바른 이메일 형식인지 검사
     private String email;
 
-    @NotBlank("위치는 필수입니다.")
     private String location;
-
-    @NotBlank(message = "휴대폰 번호는 필수입니다.")
-    private String phoneNumber;
 }
