@@ -43,6 +43,7 @@ public class Recording extends BaseEntity {
     @Column(name = "recording_duration", nullable = false)
     private Long recordingDuration;
 
+    // 기능이 추가해야 됨
     @Lob
     @Column(name = "recording_summary", columnDefinition = "TEXT")
     private String recordingSummary;
