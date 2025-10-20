@@ -31,10 +31,10 @@ public class SafeZone extends BaseEntity {
     @Column(nullable = false)
     private String location; // 주소명
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Double latitude;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Double longitude;
 
     @ManyToOne(fetch = FetchType.LAZY)
