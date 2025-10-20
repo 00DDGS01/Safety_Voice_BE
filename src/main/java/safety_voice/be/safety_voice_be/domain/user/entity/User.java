@@ -63,9 +63,6 @@ public class User extends BaseEntity {
         this.email = email;
         this.nickname = nickname;
         this.location = location;
-
-        // 유저가 생성되면 유저세팅도 자동 생성
-        this.userSetting = new UserSetting(this);
     }
 
 
