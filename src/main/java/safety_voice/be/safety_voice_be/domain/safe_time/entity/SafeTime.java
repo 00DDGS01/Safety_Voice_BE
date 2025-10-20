@@ -30,10 +30,6 @@ public class SafeTime extends BaseEntity {
     private String daysActive; // e.g., "MON,TUE,WED"
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "safe_zone_id", nullable = false)
     private SafeZone safeZone;
 
