@@ -42,7 +42,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/auth/login", "/api/auth/signup",
-                                "v3/api-docs/**", "/swagger-ui/**","swagger-ui.html"
+                                "v3/api-docs/**", "/swagger-ui/**","/swagger-ui.html"
                         ).permitAll()
                         .anyRequest().authenticated()
 
@@ -58,9 +58,11 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
-        configuration.addAllowedOrigin("*");
         configuration.addAllowedMethod("*");
+        configuration.addAllowedOriginPattern("*");
         configuration.addAllowedHeader("*");
+        configuration.addAllowedMethod("*");
+        configuration.addExposedHeader("Authorization");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
