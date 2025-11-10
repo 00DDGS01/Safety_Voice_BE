@@ -34,36 +34,33 @@ public class UserSettingService {
 
         UserSetting setting = user.getUserSetting();
         if (setting == null) {
-            throw new CustomException(UserErrorCode.SETTING_NOT_FOUND);
+            setting = UserSetting.builder()
+                    .triggerWord("")
+                    .emergencyTriggerWord("")
+                    .isVoiceTrained(false)
+                    .user(user)
+                    .build();
+            user.setUserSetting(setting);
+            userSettingRepository.save(setting);
         }
 
-        UserSettingRequestDto dto = new UserSettingRequestDto();
-        dto.setTriggerWord(setting.getTriggerWord());
-        dto.setEmergencyTriggerWord(setting.getEmergencyTriggerWord());
-        dto.setIsVoiceTrained(setting.getIsVoiceTrained());
-
-        List<EmergencyContactResponseDTO> contacts = setting.getEmergencyContacts().stream()
-                .map(emergencyContact -> EmergencyContactResponseDTO.builder()
-                        .name(emergencyContact.getName())
-                        .phoneNumber(emergencyContact.getPhoneNumber())
-                        .build()
+        return UserSettingRequestDto.builder()
+                .triggerWord(setting.getTriggerWord())
+                .emergencyTriggerWord(setting.getEmergencyTriggerWord())
+                .isVoiceTrained(setting.getIsVoiceTrained())
+                .emergencyContacts(
+                        setting.getEmergencyContacts().stream()
+                                .map(ec -> new EmergencyContactRequestDTO(ec.getName(), ec.getPhoneNumber()))
+                                .collect(Collectors.toList())
                 )
-                .toList();
-
-        dto.setEmergencyContacts(
-                contacts.stream()
-                        .map(c -> new EmergencyContactRequestDTO(c.getName(), c.getPhoneNumber()))
-                        .toList()
-        );
-
-        return dto;
+                .build();
     }
 
 
     @Transactional
     public void updateUserSetting(Long userId, UserSettingRequestDto dto) {
-        log.info("✅ [updateUserSetting] userId={}, dto={}", userId, dto);
-        User user = userRepository.findById(userId)
+        log.info("✅ [updateUserSetting] userId={}, trigger={}, emergency={}, contacts={}",
+                userId, dto.getTriggerWord(), dto.getEmergencyTriggerWord(), dto.getEmergencyContacts().size());        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
 
         UserSetting setting = user.getUserSetting();

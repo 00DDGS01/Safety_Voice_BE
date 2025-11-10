@@ -14,7 +14,6 @@ import java.util.List;
 public class SafeZoneRequestDto {
     private String safeZoneName;
     private Integer radius;
-    private String location;
     private Double latitude;
     private Double longitude;
     private List<SafeTimeDto> safeTimes;

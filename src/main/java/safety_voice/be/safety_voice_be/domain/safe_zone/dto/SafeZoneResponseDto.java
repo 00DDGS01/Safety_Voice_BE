@@ -13,7 +13,6 @@ import java.util.List;
 public class SafeZoneResponseDto {
     private Long id;
     private String safeZoneName;
-    private String location;
     private Double latitude;
     private Double longitude;
     private Integer radius;

@@ -28,9 +28,6 @@ public class SafeZone extends BaseEntity {
     @Column(nullable = false)
     private Integer radius; // in meters (e.g., 100, 200)
 
-    @Column(nullable = false)
-    private String location; // 주소명
-
     @Column(nullable = true)
     private Double latitude;
 
