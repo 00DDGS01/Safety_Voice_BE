@@ -45,6 +45,18 @@ public class SmsService {
         Twilio.init(accountSid, authToken);
     }
 
+    public String getTwilioBalance() {
+        try {
+            com.twilio.rest.api.v2010.account.Balance balance = com.twilio.rest.api.v2010.account.Balance.fetcher().fetch();
+            String result = String.format("💰 Twilio 잔액: %s %s", balance.getBalance(), balance.getCurrency());
+            System.out.println(result);
+            return result;
+        } catch (Exception e) {
+            System.err.println("⚠️ Twilio 잔액 조회 실패: " + e.getMessage());
+            throw new RuntimeException("Twilio 잔액 조회 중 오류 발생", e);
+        }
+    }
+
     // 보호자/지인 전체 발송
     public void sendEmergencyAlerts(User user, EmergencySmsRequestDto requestDto) {
 
@@ -52,7 +64,7 @@ public class SmsService {
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         String text = String.format(
-                "🚨 [긴급 알림 - 안전한 목소리] 🚨\n%s님이 위험 신호를 보냈습니다.\n위치: https://maps.google.com/?q=%f,%f\n즉시 확인 부탁드립니다.",
+                "🚨[긴급 알림 - 안전한 목소리]🚨\n%s님이 위험 신호를 보냈습니다.\n위치: https://maps.google.com/?q=%f,%f",
                 user.getNickname(),
                 requestDto.getLatitude(),
                 requestDto.getLongitude()
@@ -64,6 +76,8 @@ public class SmsService {
             String formattedNumber = formatPhoneNumber(contact.getPhoneNumber());
             sendOneSms(managedUser, formattedNumber, text);
         }
+
+        System.out.println(getTwilioBalance());
     }
 
     // 단일 발송

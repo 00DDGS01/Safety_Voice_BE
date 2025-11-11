@@ -14,6 +14,7 @@ import safety_voice.be.safety_voice_be.global.exception.code.ErrorCode;
 import safety_voice.be.safety_voice_be.global.exception.response.ApiResponse;
 import safety_voice.be.safety_voice_be.global.exception.response.CustomException;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/sms")
 @RequiredArgsConstructor
@@ -48,5 +49,12 @@ public class SmsController {
         smsService.sendOneSms(user, to, text);
 
         return ApiResponse.success("테스트 메시지를 발송했습니다.");
+    }
+
+    @GetMapping("/balance")
+    @Operation(summary = "Twilio 잔액 조회", description = "현재 Twilio 계정의 남은 크레딧을 조회합니다.")
+    public ApiResponse<String> getBalance() {
+        String balance = smsService.getTwilioBalance();
+        return ApiResponse.success(balance);
     }
 }
