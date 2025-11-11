@@ -12,6 +12,9 @@ import safety_voice.be.safety_voice_be.domain.sms.dto.EmergencySmsRequestDto;
 import safety_voice.be.safety_voice_be.domain.sms.entity.SmsLog;
 import safety_voice.be.safety_voice_be.domain.sms.repository.SmsLogRepository;
 import safety_voice.be.safety_voice_be.domain.user.entity.User;
+import safety_voice.be.safety_voice_be.domain.user.repository.UserRepository;
+import safety_voice.be.safety_voice_be.global.exception.code.ErrorCode;
+import safety_voice.be.safety_voice_be.global.exception.response.CustomException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,6 +24,7 @@ import java.util.List;
 public class SmsService {
 
     private final SmsLogRepository smsLogRepository;
+    private final UserRepository userRepository;
 
     @Value("${twilio.account-sid}")
     private String accountSid;
@@ -31,8 +35,9 @@ public class SmsService {
     @Value("${twilio.from-number}")  // Twilio에서 구매한 발신번호
     private String fromNumber;
 
-    public SmsService(SmsLogRepository smsLogRepository) {
+    public SmsService(SmsLogRepository smsLogRepository, UserRepository userRepository) {
         this.smsLogRepository = smsLogRepository;
+        this.userRepository = userRepository;
     }
 
     @PostConstruct
@@ -42,6 +47,10 @@ public class SmsService {
 
     // 보호자/지인 전체 발송
     public void sendEmergencyAlerts(User user, EmergencySmsRequestDto requestDto) {
+
+        User managedUser = userRepository.findById(user.getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
         String text = String.format(
                 "🚨 [긴급 알림 - 안전한 목소리] 🚨\n%s님이 위험 신호를 보냈습니다.\n위치: https://maps.google.com/?q=%f,%f\n즉시 확인 부탁드립니다.",
                 user.getNickname(),
@@ -49,10 +58,11 @@ public class SmsService {
                 requestDto.getLongitude()
         );
 
-        List<EmergencyContact> contacts = user.getUserSetting().getEmergencyContacts();
+        List<EmergencyContact> contacts = managedUser.getUserSetting().getEmergencyContacts();
 
         for (EmergencyContact contact : contacts) {
-            sendOneSms(user, contact.getPhoneNumber(), text);
+            String formattedNumber = formatPhoneNumber(contact.getPhoneNumber());
+            sendOneSms(managedUser, formattedNumber, text);
         }
     }
 
@@ -91,4 +101,14 @@ public class SmsService {
             smsLogRepository.save(log);
         }
     }
+
+    // ✅ 한국 전화번호를 Twilio 국제표준 E.164로 변환
+    private String formatPhoneNumber(String raw) {
+        String cleaned = raw.replaceAll("[^0-9]", ""); // 숫자만 남김
+        if (cleaned.startsWith("0")) {
+            cleaned = cleaned.substring(1);
+        }
+        return "+82" + cleaned; // 대한민국 국가번호 추가
+    }
+
 }

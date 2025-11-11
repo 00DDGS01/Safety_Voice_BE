@@ -1,0 +1,10 @@
+version: "3"
+agent:
+  authtoken: 32GockINUM7aJdilzo0y9OK24s9_66JC1T6aunzMEdeSwYseT
+
+
+tunnels:
+  safetyvoice:
+    addr: 8080
+    proto: http
+    subdomain: safetyvoice

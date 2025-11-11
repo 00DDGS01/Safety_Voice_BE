@@ -3,11 +3,13 @@ package safety_voice.be.safety_voice_be.domain.sms.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import safety_voice.be.safety_voice_be.domain.sms.dto.EmergencySmsRequestDto;
 import safety_voice.be.safety_voice_be.domain.sms.service.SmsService;
 import safety_voice.be.safety_voice_be.domain.user.entity.User;
 import safety_voice.be.safety_voice_be.domain.user.repository.UserRepository;
+import safety_voice.be.safety_voice_be.global.Security.CustomUserDetails;
 import safety_voice.be.safety_voice_be.global.exception.code.ErrorCode;
 import safety_voice.be.safety_voice_be.global.exception.response.ApiResponse;
 import safety_voice.be.safety_voice_be.global.exception.response.CustomException;
@@ -23,11 +25,10 @@ public class SmsController {
     @PostMapping("/emergency")
     @Operation(summary = "긴급 상황 SMS 발송", description = "EmergencyContact에 등록된 번호로 긴급 메시지를 발송합니다.")
     public ApiResponse<String> sendEmergencySms(
-            @RequestParam("userId") Long userId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestBody EmergencySmsRequestDto requestDto
     ) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        User user = customUserDetails.getUser(); // ✅ 로그인한 사용자 정보 바로 가져오기
 
         smsService.sendEmergencyAlerts(user, requestDto);
 
