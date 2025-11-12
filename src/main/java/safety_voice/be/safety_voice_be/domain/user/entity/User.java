@@ -48,9 +48,6 @@ public class User extends BaseEntity {
     private List<SafeZone> safeZones = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SafeTime> safeTimes = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RecordingFolder> recordingFolders = new ArrayList<>();
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
@@ -63,9 +60,6 @@ public class User extends BaseEntity {
         this.email = email;
         this.nickname = nickname;
         this.location = location;
-
-        // 유저가 생성되면 유저세팅도 자동 생성
-        this.userSetting = new UserSetting(this);
     }
 
 

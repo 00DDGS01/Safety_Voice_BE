@@ -20,7 +20,7 @@ public class UserSettingController {
 
     private final UserSettingService userSettingService;
 
-    @GetMapping
+    @GetMapping(produces = "application/json; charset=UTF-8")
     @Operation(
             summary = "사용자 설정 조회",
             description = "현재 로그인된 사용자의 트리거 단어, 반복 횟수, 긴급 연락 설정을 조회"

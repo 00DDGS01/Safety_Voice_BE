@@ -2,6 +2,7 @@ package safety_voice.be.safety_voice_be.domain.safe_time.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import safety_voice.be.safety_voice_be.domain.safe_zone.entity.SafeZone;
 import safety_voice.be.safety_voice_be.domain.user.entity.User;
 import safety_voice.be.safety_voice_be.global.base.BaseEntity;
 
@@ -29,8 +30,11 @@ public class SafeTime extends BaseEntity {
     private String daysActive; // e.g., "MON,TUE,WED"
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "safe_zone_id", nullable = false)
+    private SafeZone safeZone;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
 
 }

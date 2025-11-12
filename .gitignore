@@ -28,6 +28,8 @@ out/
 
 ### Spring Boot 설정파일 ###
 application.yml
+ngrok.yml
+src/main/resources/ngrok.yml
 
 ### NetBeans ###
 /nbproject/private/
