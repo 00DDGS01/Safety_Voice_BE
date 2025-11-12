@@ -33,4 +33,8 @@ public class SafeTime extends BaseEntity {
     @JoinColumn(name = "safe_zone_id", nullable = false)
     private SafeZone safeZone;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
 }

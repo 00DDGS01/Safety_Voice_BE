@@ -57,6 +57,7 @@ public class SafeZoneService {
                 for (SafeZoneRequestDto.SafeTimeDto timeDto : dto.getSafeTimes()) {
                     SafeTime safeTime = SafeTime.builder()
                             .safeZone(savedZone)
+                            .user(user)
                             .startTime(timeDto.getStartTime())
                             .endTime(timeDto.getEndTime())
                             .daysActive(timeDto.getDaysActive())
